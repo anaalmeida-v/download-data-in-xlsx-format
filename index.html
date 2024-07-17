@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div>
+        <p class="nome">Ana</p>
+        <p class="email">ana@test.com</p>
+        <p class="data">22-02-2024</p>
+    </div>
+    <div>
+        <p class="nome">José</p>
+        <p class="email">jose@test.com</p>
+        <p class="data">06-08-2022</p>
+    </div>
+    <button id="baixar-planilha">Baixar como planilha</button>
+
+    <script>
+        async function baixarComoPlanilha() {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet([
+                ["Nome", "E-mail", "Data do Cadastro"],
+            ]);
+
+            const nomes = document.querySelectorAll(".nome");
+            const emails = document.querySelectorAll(".email");
+            const datas = document.querySelectorAll(".data");
+
+            nomes.forEach((nome, rowIndex) => {
+                XLSX.utils.sheet_add_aoa(ws, [[nome.textContent, emails[rowIndex].textContent, datas[rowIndex].textContent]], { origin: rowIndex + 1 });
+            });
+
+            XLSX.utils.book_append_sheet(wb, ws, "Lista de Clientes");
+
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Lista_de_Clientes.xlsx';
+
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        document.addEventListener("DOMContentLoaded", function(){
+            document.getElementById('baixar-planilha').addEventListener('click', baixarComoPlanilha);
+        });
+    </script>
+</body>
+</html>
